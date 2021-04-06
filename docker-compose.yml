@@ -1,0 +1,38 @@
+version: "3"
+
+services:
+  web:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+    container_name: web
+    volumes:
+      - ./html:/var/www/html
+    ports:
+        - "80:80"
+    privileged: true
+    command: /sbin/init
+    networks:
+      app_net:
+        ipv4_address: 172.30.0.2
+  db:
+    build:
+      context: ./db
+      dockerfile: Dockerfile
+    container_name: db
+    ports:
+        - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    networks:
+      app_net:
+        ipv4_address: 172.30.0.3
+networks:
+  app_net:
+    name: app_net
+    driver: bridge
+    ipam:
+     driver: default
+     config:
+       - subnet: 172.30.0.0/24
